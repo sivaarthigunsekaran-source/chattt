@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sender</title>
+</head>
+<body>
+
+<h2>Sender (Port 5000)</h2>
+
+<input id="user" placeholder="Your name"><br><br>
+<input id="msg" placeholder="Message"><br><br>
+
+<button onclick="send()">Send</button>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  function send() {
+    const user = document.getElementById("user").value;
+    const msg = document.getElementById("msg").value;
+    socket.emit("send_message", { user, msg });
+  }
+</script>
+
+</body>
+</html>

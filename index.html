@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polyglot Chat</title>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  #chat-container {
+    width: 400px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  h2 {
+    text-align: center;
+  }
+
+  input, select, button {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  button {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  #chat {
+    list-style: none;
+    padding: 0;
+    height: 250px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+  }
+
+  #chat li {
+    padding: 6px;
+    margin: 4px;
+    background: #f1f1f1;
+    border-radius: 5px;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="chat-container">
+  <h2>Polyglot Chat</h2>
+
+  <input id="username" placeholder="Enter your name" />
+
+  <select id="lang">
+    <option value="en">English</option>
+    <option value="ta">Tamil</option>
+    <option value="hi">Hindi</option>
+  </select>
+
+  <ul id="chat"></ul>
+
+  <input id="message" placeholder="Type your message..." />
+  <button onclick="sendMessage()">Send</button>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  const socket = io();
+
+  // Send selected language to server
+  document.getElementById("lang").addEventListener("change", () => {
+    socket.emit("set_language", document.getElementById("lang").value);
+  });
+
+  function sendMessage() {
+    const user = document.getElementById("username").value.trim();
+    const msg = document.getElementById("message").value.trim();
+
+    if (!user || !msg) {
+      alert("Enter name and message");
+      return;
+    }
+
+    socket.emit("send_message", { user, msg });
+    document.getElementById("message").value = "";
+  }
+
+  socket.on("receive_message", (data) => {
+    addMessage(data.user, data.translatedMsg);
+  });
+
+  function addMessage(user, msg) {
+    const li = document.createElement("li");
+    li.textContent = `${user}: ${msg}`;
+    document.getElementById("chat").appendChild(li);
+  }
+</script>
+
+</body>
+</html>
